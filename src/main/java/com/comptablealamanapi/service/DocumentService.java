@@ -17,4 +17,6 @@ public interface DocumentService {
     DocumentResponse validateDocument(Long documentId, String commentaire);
     
     DocumentResponse rejectDocument(Long documentId, String motif);
+    
+    List<DocumentResponse> getDocumentsBySociete(Long societeId);
 }

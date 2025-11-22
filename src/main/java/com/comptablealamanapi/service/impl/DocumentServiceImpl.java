@@ -53,4 +53,9 @@ public class DocumentServiceImpl implements DocumentService {
         document.setDateValidation(LocalDateTime.now());
         return documentMapper.toResponse(documentRepository.save(document));
     }
+    
+    @Override
+    public List<DocumentResponse> getDocumentsBySociete(Long societeId) {
+        return documentMapper.toResponseList(documentRepository.findBySociete(societeId));
+    }
 }

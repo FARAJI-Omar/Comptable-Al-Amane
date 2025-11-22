@@ -30,14 +30,19 @@ public class ComptableDocumentController {
     @PutMapping("/{documentId}/validate")
     public ResponseEntity<ApiResponse<DocumentResponse>> validateDocument(
             @PathVariable Long documentId,
-            @RequestParam(required = false) String commentaire) {
+            @RequestBody(required = false) String commentaire) {
         return ResponseEntity.ok(ApiResponse.success(documentService.validateDocument(documentId, commentaire), "Document validé"));
     }
     
     @PutMapping("/{documentId}/reject")
     public ResponseEntity<ApiResponse<DocumentResponse>> rejectDocument(
             @PathVariable Long documentId,
-            @RequestParam String motif) {
+            @RequestBody String motif) {
         return ResponseEntity.ok(ApiResponse.success(documentService.rejectDocument(documentId, motif), "Document rejeté"));
+    }
+    
+    @GetMapping("/documents/societe/{societeId}")
+    public ResponseEntity<ApiResponse<List<DocumentResponse>>> getDocumentsBySociete(@PathVariable Long societeId) {
+        return ResponseEntity.ok(ApiResponse.success(documentService.getDocumentsBySociete(societeId), "Documents récupérés"));
     }
 }

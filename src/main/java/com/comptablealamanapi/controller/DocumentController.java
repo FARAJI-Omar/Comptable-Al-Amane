@@ -28,6 +28,7 @@ import java.io.IOException;
 public class DocumentController {
     private final FileUploadService fileUploadService;
 
+    // upload a document
     @PreAuthorize("hasAuthority('SOCIETE')")
     @PostMapping("/upload")
     public ResponseEntity<DocumentResponse> uploadDocument(
@@ -42,12 +43,8 @@ public class DocumentController {
         return ResponseEntity.ok(uploadedDocument);
     }
 
-    @PreAuthorize("hasAuthority('COMPTABLE')")
-    @GetMapping("/test")
-    public String test() {
-        return "test";
-    }
 
+    // view a document by numeroPiece
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
 

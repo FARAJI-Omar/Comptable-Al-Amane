@@ -19,4 +19,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<Document> findByStatutOrderByCreatedAtDesc(StatutDocument statut);
     
     List<Document> findBySocieteIdAndStatutOrderByCreatedAtDesc(Long societeId, StatutDocument statut);
+
+    @Query("SELECT d FROM Document d WHERE d.societe.id = :societeId ORDER BY d.createdAt DESC")
+    List<Document> findBySociete(@Param("societeId") Long societeId);
 }
