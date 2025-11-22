@@ -19,17 +19,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
+    private final JwtService jwtService;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+        CustomAuthenticationFilter customAuthFilter = new CustomAuthenticationFilter(authenticationManager, jwtService);
+        
         return http.csrf(csrf -> csrf.disable())
                 .headers(h -> h.frameOptions(f -> f.disable()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/h2-console/**", "/uploads/**", "/*.pdf", "/*.jpg", "/*.png").permitAll()
+                        .requestMatchers("/h2-console/**", "/uploads/**", "/*.pdf", "/*.jpg", "/*.png").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(customAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 }
