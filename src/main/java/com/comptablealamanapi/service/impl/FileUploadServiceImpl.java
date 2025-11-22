@@ -11,6 +11,7 @@ import com.comptablealamanapi.exception.InvalidFileTypeException;
 import com.comptablealamanapi.mapper.DocumentMapper;
 import com.comptablealamanapi.repository.DocumentRepository;
 import com.comptablealamanapi.service.FileUploadService;
+import jakarta.annotation.PreDestroy;
 import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 public class FileUploadServiceImpl implements FileUploadService {
@@ -99,5 +101,25 @@ public class FileUploadServiceImpl implements FileUploadService {
     public String getDocumentFilePath(String numeroPiece) {
         DocumentResponse document = documentMapper.toResponse(documentRepository.findByNumeroPiece(numeroPiece));
         return document != null ? document.getFichierPiece() : null;
+    }
+    
+    @PreDestroy
+    public void cleanup() {
+        try {
+            Path uploadRoot = Paths.get(System.getProperty("user.dir"), baseUploadPath);
+            if (Files.exists(uploadRoot)) {
+                try (Stream<Path> files = Files.walk(uploadRoot)) {
+                    files.filter(Files::isRegularFile).forEach(file -> {
+                        try {
+                            Files.delete(file);
+                        } catch (IOException e) {
+                            System.err.println("Failed to delete: " + file);
+                        }
+                    });
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error during cleanup: " + e.getMessage());
+        }
     }
 }
